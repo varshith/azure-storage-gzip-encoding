@@ -21,8 +21,10 @@ namespace ASGE
         {
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
             var options = new Options();
-            if (CommandLine.Parser.Default.ParseArguments(args, options))
+            var result = CommandLine.Parser.Default.ParseArguments<Options>(args);
+            if (result is CommandLine.Parsed<Options>)
             {
+                options = ((Parsed<Options>)result).Value;
                 if (string.IsNullOrEmpty(options.NewExtension) && !options.Replace)
                 {
                     Console.WriteLine("Must provide either -r (in-place replacement) or -n (new extension/postfix to append to compressed version).");
@@ -37,7 +39,7 @@ namespace ASGE
                 }
                 else if (!string.IsNullOrEmpty(options.StorageAccount) && !String.IsNullOrEmpty(options.StorageKey))
                 {
-                    storageAccount = new CloudStorageAccount(new StorageCredentials(options.StorageAccount, options.StorageKey), true);        
+                    storageAccount = new CloudStorageAccount(new StorageCredentials(options.StorageAccount, options.StorageKey), true);
                 }
                 else
                 {
@@ -57,7 +59,8 @@ namespace ASGE
                     Utility.SetWildcardCorsOnBlobService(storageAccount);
                 }
 
-                Trace.TraceInformation("Complete.");                
+                Trace.TraceInformation("Complete.");
+                Console.WriteLine("Complete.");
             }
         }
 
